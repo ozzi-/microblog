@@ -48,7 +48,7 @@
 					$page=$page+1;
 				}
 				$pc++;
-				echo ('<div class="blogListPostTitle"> <a href="'.blogPath.parameterChar.'view=blog&page='.($page).'#entry'.$currentPost.'">['.$currentPost.'] - '.file_get_contents(blogContentPath.'dates/'.$currentPost.'.html')."</a> </div><br>");
+				echo ('<div class="blogListPostTitle"> <a href="'.blogPath.parameterChar.'page='.($page).'#entry'.$currentPost.'">['.$currentPost.'] - '.file_get_contents(blogContentPath.'dates/'.$currentPost.'.html')."</a> </div><br>");
 			}else{
 				outputBlogPost($currentPost,$filename);
 			}
@@ -69,9 +69,9 @@
 
 	function outputPageNav($totalPages,$navPage,$permaLink){
 		if($permaLink==0){
-			echo('<center><a href="'.blogPath.'&page=1" class="blogPageLink"><<</a>|');
+			echo('<center><a href="'.blogPath.parameterChar.'page=1" class="blogPageLink"><<</a>|');
 			if($totalPages==1){
-				echo('&nbsp;<a href="'.blogPath.'&page='.($navPage).'" class="blogPageLink"># '.($navPage).'</a>|');
+				echo('&nbsp;<a href="'.blogPath.parameterChar.'page='.($navPage).'" class="blogPageLink"># '.($navPage).'</a>|');
 			}else{
 				if ($navPage-1>=1){
 					if(!($navPage+1<=$totalPages) && $navPage==$totalPages && ($navPage-2)>=1){
@@ -87,13 +87,13 @@
 					}
 				}
 			}
-			echo('<a href="'.blogPath.'&page='.$totalPages.'" class="blogPageLink">>> </a> </center>');
+			echo('<a href="'.blogPath.parameterChar.'page='.$totalPages.'" class="blogPageLink">>> </a> </center>');
 		}
 	}
 
 	function outputBlogPost($currentPost,$filename){
 		echo ('<p id="entry'.$currentPost.'"></p><br><hr><div class="blogPostTitle">['.$currentPost.'] - '.file_get_contents(blogContentPath.'dates/'.$currentPost.'.html')."</div>");
-		echo ('<a href="'.blogPath.parameterChar.'view=blog&permalink='.($currentPost).'" class="blogPermanentLink">Permanent link</a>');
+		echo ('<a href="'.blogPath.parameterChar.'permalink='.($currentPost).'" class="blogPermanentLink">Permanent link</a>');
 		echo("<hr><br>");
 		$blogContent = file_get_contents($filename);
 		echo ('<div class="blogPostContent">'.$blogContent.'</div>');
