@@ -1,0 +1,48 @@
+.blogTitle {
+	font-size: 39px;
+	font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-weight: 300;
+	line-height: 1.1;
+	margin-top: 21px;
+	margin-bottom: 10.5px;
+	color: inherit;
+	text-align: center;
+} 
+
+
+.blogFooterSpacer {
+	margin-bottom: 3em;
+}
+
+.blogFooter{
+
+
+}
+
+.blogListPostTitle{
+	font-size:15px;
+
+}
+
+.blogPostTitle{
+	font-size:23px;
+	margin-bottom:3px;
+
+}
+
+.blogPostContent{
+
+	
+}
+
+.blogCurrentPageLink{
+	font-size: 120%;
+}
+
+.blogPageLink{
+	
+}
+
+.blogPermanentLink{
+	
+}
