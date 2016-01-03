@@ -102,7 +102,7 @@
 
 	function outputPageLink($i,$bold=false){
 		if($bold){
-			echo('f&nbsp;<a href="'.blogURL.parameterChar.'page='.($i).'" class="blogCurrentPageLink"><b># '.($i).'</b></a>|');
+			echo('&nbsp;<a href="'.blogURL.parameterChar.'page='.($i).'" class="blogCurrentPageLink"><b># '.($i).'</b></a>|');
 		}else{
 			echo('&nbsp;<a href="'.blogURL.parameterChar.'page='.($i).'" class="blogPageLink"># '.($i).'</a>|');	
 		}
