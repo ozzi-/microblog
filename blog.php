@@ -48,12 +48,13 @@
 					$page=$page+1;
 				}
 				$postCounter++;
-				echo ('<div class="blogListPostTitle"> <a href="'.blogURL.parameterChar.'page='.($page).'#entry'.$currentPost.'">['.$currentPost.'] - '.file_get_contents(blogContentPath.blogContentTitlesPath.$currentPost.'.html')."</a> </div><br>");
+				$varSpacing = strlen((string)$totalPosts)- strlen((string)$currentPost);
+				echo ('<div class="blogListPostTitle"> <a href="'.blogURL.parameterChar.'page='.($page).'#entry'.$currentPost.'">['.$currentPost.'] '.str_repeat('<span style="color: transparent;">1</span>',$varSpacing).'- '.file_get_contents(blogContentTitlesPath.$currentPost.'.html')."</a> </div><br>");
 			}else{
 				outputBlogPost($currentPost,$filename);
 			}
 		}else{
-			echo("Error: Missing blog content!");
+			echo("Missing blog content (".$currentPost.")");
 		}
 		$currentPost--;
 	}
@@ -92,7 +93,7 @@
 	}
 
 	function outputBlogPost($currentPost,$filename){
-		echo ('<p id="entry'.$currentPost.'"></p><br><hr><div class="blogPostTitle">['.$currentPost.'] - '.file_get_contents(blogContentPath.blogContentTitlesPath.$currentPost.'.html')."</div>");
+		echo ('<p id="entry'.$currentPost.'"></p><br><hr><div class="blogPostTitle">['.$currentPost.'] - '.file_get_contents(blogContentTitlesPath.$currentPost.'.html')."</div>");
 		echo ('<a href="'.blogURL.parameterChar.'permalink='.($currentPost).'" class="blogPermanentLink">Permanent link</a>');
 		echo("<hr><br>");
 		$blogContent = file_get_contents($filename);

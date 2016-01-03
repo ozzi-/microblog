@@ -18,7 +18,7 @@
 	define ( "blogContentPath", "./blogcontent/");
 
 	// Path where the blog titles lie, should end with /
-	define ( "blogContentTitlesPath" ,"./blongcontent/titles/");
+	define ( "blogContentTitlesPath" ,"./blogcontent/titles/");
 
 	// Do not change
 	define ( "blogContentSearchPath", blogContentPath."*.*" );
@@ -28,4 +28,5 @@
 
 	// Message that is displayed if no content was found
 	define ( "noPostsYet","<hr>There aren't any Posts yet. Make sure to come back soon!<hr>");
+
 ?>
