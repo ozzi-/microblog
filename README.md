@@ -8,7 +8,7 @@ The order of the posts is managed by the filenames, thats why all files should b
 
 # Live demo
 Everybody likes live demos! 
-Its the same data, easily integrated into a page (1) or as a standalone (2).
+Its the same data, as a standalone (1) or easily integrated into a page (1).
 
 (1) http://thoughts-and-tricks.oz-web.com/index.php
 
