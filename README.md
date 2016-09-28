@@ -1,10 +1,12 @@
 # µblog
-Easy to setup & configure PHP only blog.
+Easy to setup, integrate into existing pages and customize micro blog. Requires PHP only (no database needed).
 
 # Adding content
-Blog posts are stored as html files, so you can use whatever markup you like.
-Every blogpost consists of two files, one containing the blog content itself, the other containing the title (and presumably the date).
-The order of the posts is managed by the filenames, thats why all files should be named like the following {incrementing number}.html
+Blog posts are stored as html files, so you can use whatever mark-up you like.
+The first line of the file is interpreted as the post title. The order of the posts is managed by the file names, that's why all files should be named like the following {incrementing number}.html
+
+# Changing the design
+In the templates folder you can tweak µblog design easily.
 
 # Live demo
 Everybody likes live demos! 

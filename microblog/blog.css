@@ -1,6 +1,5 @@
 .blogTitle {
 	font-size: 39px;
-	font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
 	font-weight: 300;
 	line-height: 1.1;
 	margin-top: 21px;
@@ -9,40 +8,39 @@
 	text-align: center;
 } 
 
-
-.blogFooterSpacer {
-	margin-bottom: 3em;
+.linkNoDecoration{
+	text-decoration: none
 }
 
-.blogFooter{
+.blogMain {
+	font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
 
-
+.blogFooterSpacer {
+	margin-bottom: 5em;
 }
 
 .blogListPostTitle{
 	font-size:15px;
-
 }
 
 .blogPostTitle{
 	font-size:23px;
 	margin-bottom:3px;
-
-}
-
-.blogPostContent{
-
-	
 }
 
 .blogCurrentPageLink{
 	font-size: 120%;
 }
 
+.blogPostContent{
+}
+
 .blogPageLink{
-	
 }
 
 .blogPermanentLink{
-	
+}
+
+.blogFooter{
 }
