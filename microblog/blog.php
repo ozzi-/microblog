@@ -42,6 +42,10 @@
 				$filename=dirname(__FILE__)."/content/".$currentPost.'.html';
 				$content = file_get_contents($filename);
 				$title=strtok($content, "\n");
+				if($permaLink!==false){
+					echo("<meta itemprop=\"name\" content=\"$title\">");
+					echo("<meta name=\"description\" content=\"$title\">");
+				}
 				$content=substr($content, strpos($content, "\n") + 1);
 				if($listPosts){
 					$lpage=floor(($totalPosts-$currentPost) / blogPostsPerPage)+1;
