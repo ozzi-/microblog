@@ -45,6 +45,7 @@
 				if($permaLink!==false){
 					echo("<meta itemprop=\"name\" content=\"$title\">");
 					echo("<meta name=\"description\" content=\"$title\">");
+					echo("<meta name=\"title\" content=\"".blogName."\">");
 				}
 				$content=substr($content, strpos($content, "\n") + 1);
 				if($listPosts){
@@ -93,7 +94,8 @@
 		$valueArray['title']=$title;
 		echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/title.html")));
 		if(!$permaLink){
-			$valueArray['permaLink']=blogURL.parameterChar.'permalink='.$currentPost;
+			$titleSafe = str_replace(" ", "_", $title);
+			$valueArray['permaLink']=blogURL.parameterChar.'permalink='.$currentPost.'#'.$titleSafe;
 			echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/permalink.html")));
 		}
 		$valueArray['content']=$content;
