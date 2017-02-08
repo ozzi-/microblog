@@ -13,8 +13,4 @@ In the templates folder you can tweak µblog design easily.
 
 # Live demo
 Everybody likes live demos! 
-Its the same data, as a standalone (1) or easily integrated into a page (2).
-
-(1) http://thoughts-and-tricks.oz-web.com/index.php
-
-(2) http://zgheb.com/index.php?view=blog
+https://zgheb.com/i?v=blog
