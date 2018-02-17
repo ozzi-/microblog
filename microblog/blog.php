@@ -41,11 +41,12 @@
 			while( (!$listPosts && $currentPost > $firstPost-blogPostsPerPage && $currentPost>0) || ($listPosts && $currentPost > 0) ){
 				$filename=dirname(__FILE__)."/content/".$currentPost.'.html';
 				$content = file_get_contents($filename);
+				$content_preview = strip_tags(preg_replace('/^.+\n/', '', $content));
 				$title=strtok($content, "\n");
 				if($permaLink!==false){
 					echo("<meta itemprop=\"name\" content=\"$title\">");
-					echo("<meta name=\"description\" content=\"$title\">");
-					echo("<meta name=\"title\" content=\"".blogName."\">");
+					echo("<meta name=\"description\" content=\"$content_preview\">");
+					echo("<meta name=\"title\" content=\"$title\">");
 				}
 				$content=substr($content, strpos($content, "\n") + 1);
 				if($listPosts){
