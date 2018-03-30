@@ -41,7 +41,7 @@
 			while( (!$listPosts && $currentPost > $firstPost-blogPostsPerPage && $currentPost>0) || ($listPosts && $currentPost > 0) ){
 				$filename=dirname(__FILE__)."/content/".$currentPost.'.html';
 				$content = file_get_contents($filename);
-				$content_preview = strip_tags(preg_replace('/^.+\n/', '', $content));
+				$content_preview = preg_replace('/^.+\n/', '', htmlspecialchars(preg_replace("#<(.*)/(.*)>#iUs", "", $content)));
 				$title=strtok($content, "\n");
 				if($permaLink!==false){
 					echo("<meta itemprop=\"name\" content=\"$title\">");
