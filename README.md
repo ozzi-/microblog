@@ -3,10 +3,8 @@ Easy to setup, integrate into existing pages and customize micro blog.
 Requires PHP only (no database needed).
 
 ## Installation
-0. Download the newest release from https://github.com/ozzi-/-blog/releases
-1. Unzip folder
-2. Copy to your www root folder
-3. Done
+https://asciinema.org/a/fk6GCh7YaCtUagTrRy2PgkM3G
+wget URL can be found in this repository under "Releases"
 
 ## Adding content
 Blog posts are stored as html files - you can use whatever mark-up you like.
