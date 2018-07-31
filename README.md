@@ -4,6 +4,7 @@ Requires PHP only (no database needed).
 
 ## Installation
 https://asciinema.org/a/fk6GCh7YaCtUagTrRy2PgkM3G
+
 wget URL can be found in this repository under "Releases"
 
 ## Adding content
