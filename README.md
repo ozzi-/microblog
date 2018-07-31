@@ -1,6 +1,7 @@
 # µblog
 Easy to setup, integrate into existing pages and customize micro blog.
-Requires PHP only (no database needed).
+
+Requires no database, only PHP.
 
 ## 30 Second Installation
 Animated Installation Guide:
