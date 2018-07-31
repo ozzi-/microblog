@@ -20,7 +20,8 @@ In the templates folder you can tweak µblog design with ease.
 Terms in dobule curly brackets will be replaced by µblog automagically.
 Example of header.html:
 
-```<div class='blogTitle'>
+```
+<div class='blogTitle'>
 	<a href="{{linkHome}}" class="linkNoDecoration">A new &#181;blog instance</a>
 </div><br>
 ```
