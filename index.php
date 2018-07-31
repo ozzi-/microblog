@@ -1,4 +1,4 @@
-	<?php
-	include("microblog/blog.php");
-	renderBlog();
+<?php
+  include("microblog/blog.php");
+  renderBlog();
 ?>
