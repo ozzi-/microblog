@@ -10,8 +10,6 @@
 		$valueArray=[];
 		$valueArray['linkHome']=blogURL;
 		echo("<span class=\"blogMain\">");
-
-		echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/header.html")));
 		
 		if (isset($_GET['page'])) {
 			$listPosts=false;
@@ -19,36 +17,43 @@
 			$page=($page<1||$page>10000)?1:$page;
 			$firstPost=($totalPosts)-($page*blogPostsPerPage)+blogPostsPerPage;
 			$currentPost=$firstPost;
-		}elseif(isset($_GET['permalink'])){
-			$permaLink=ctype_digit($_GET['permalink'])?htmlspecialchars($_GET['permalink']):1;
+		}elseif(isset($_GET['pl'])||isset($_GET['permalink'])){
+			if(isset($_GET['pl'])){
+				$permaLink=ctype_digit($_GET['pl'])?htmlspecialchars($_GET['pl']):1;
+			}else{
+				$permaLink=ctype_digit($_GET['permalink'])?htmlspecialchars($_GET['permalink']):1;
+			}
 			$firstPost=$permaLink+blogPostsPerPage-1;
 			$currentPost=$permaLink;
 			$listPosts=false;
 		}else{
+			echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/header.html")));
 			$page="1";
 			$currentPost=$totalPosts;
 			$listPosts=true;
 		}
 
 		if ($totalPosts===0) {
-			echo (noPostsYet);
+			echo ("Nothing here yet, make sure to come back and check again soon!");
 		}else{
 			if(!$permaLink && !$listPosts){
 				outputPageNav($totalPages,$page,$listPosts);
 			}
-			echo("<br>");
 			$postCounter=0;
+			echo("<br>");
+			
+			ini_set('display_errors', 1);
+			ini_set('display_startup_errors', 1);
+			error_reporting(E_ALL);
+			
 			while( (!$listPosts && $currentPost > $firstPost-blogPostsPerPage && $currentPost>0) || ($listPosts && $currentPost > 0) ){
-				$filename=dirname(__FILE__)."/content/".$currentPost.'.html';
-				$content = file_get_contents($filename);
-				$content_preview = preg_replace('/^.+\n/', '', htmlspecialchars(preg_replace("#<(.*)/(.*)>#iUs", "", $content)));
-				$title=strtok($content, "\n");
+				$filePath=dirname(__FILE__)."/content/".$currentPost.'.html';
+				$blogEntry = loadBlogEntry($filePath);
+				
 				if($permaLink!==false){
-					echo("<meta itemprop=\"name\" content=\"$title\">");
-					echo("<meta name=\"description\" content=\"$content_preview\">");
-					echo("<meta name=\"title\" content=\"$title\">");
+					renderMetaData($blogEntry,$currentPost);
 				}
-				$content=substr($content, strpos($content, "\n") + 1);
+
 				if($listPosts){
 					$lpage=floor(($totalPosts-$currentPost) / blogPostsPerPage)+1;
 					$valueArray['postId']=$currentPost;
@@ -56,7 +61,7 @@
 					$valueArray['postURL']=blogURL.parameterChar.'page='.($lpage);
 					echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/listtitle.html")));
 				}else{
-					outputBlogPost($currentPost,$title,$content,$permaLink);
+					outputBlogPost($currentPost,$blogEntry["title"],$blogEntry["content"],$permaLink);
 				}
 				$currentPost--;
 			}
@@ -68,6 +73,7 @@
 		echo("</span>");
 	}
 
+	
 	function outputPageNav($totalPages,$navPage,$listPosts){
 		echo('<center><a href="'.blogURL.parameterChar.'page=1" class="blogPageLink">&lt;&lt;</a>|');
 		if($totalPages==1){
@@ -89,6 +95,45 @@
 		}
 		echo('<a href="'.blogURL.parameterChar.'page='.$totalPages.'" class="blogPageLink">&gt;&gt; </a> </center>');
 	}
+	
+	
+	function renderMetaData($blogEntry,$currentPost){
+		$title =  !isset($blogEntry["json"]["og:title"])?$blogEntry["title"]:$blogEntry["json"]["og:title"];
+		$preview = strip_tags($blogEntry["content"]);
+		$description = !isset($blogEntry["json"]["og:description"])?$preview:$blogEntry["json"]["og:description"];
+		$titleSafe = str_replace(" ", "_", $title);
+		$url = !isset($blogEntry["json"]["og:url"])?blogURL.parameterChar.'pl='.$currentPost.'#'.$titleSafe:$blogEntry["json"]["og:url"];
+		$type = !isset($blogEntry["json"]["og:type"])?"article":$blogEntry["json"]["type"];
+		if(pathToDefaultOpenGraphImage!=null){
+			$image = !isset($blogEntry["json"]["og:image"])?pathToDefaultOpenGraphImage:$blogEntry["json"]["image"];
+		}
+		?>
+		<meta name="description" content="<?= $description?>">
+		<meta name="title" content="<?= $title ?>">
+		<meta property="og:type" content="<?= $type ?>"/>
+		<meta property="og:title" content=" <?= $title ?>"/>
+		<meta property="og:description" content="<?= $description?>"/>
+		<meta name="twitter:card" content="summary"/>
+		<meta name="twitter:title" content="<?= $title ?>" />
+		<meta name="twitter:description" content="<?= $description?>" />
+		<?php
+		if(pathToDefaultOpenGraphImage!=null){
+			?><meta property="og:image" content="<?= $image ?>"/><?php
+		}
+	}
+	
+	function loadBlogEntry($filePath){
+		$marker = "# Start Content #";
+		$blogEntry = array();
+		$rawData = file_get_contents($filePath);
+		$posEndJson = strpos($rawData,$marker);
+		$posStartJson = strpos($rawData, "\n");
+		$blogEntry['rawData'] = $rawData;
+		$blogEntry['title'] = strtok($rawData, "\n");
+		$blogEntry['json'] = json_decode(substr($rawData, $posStartJson, $posEndJson-$posStartJson),true);
+		$blogEntry['content'] = substr($rawData,$posEndJson+strlen($marker));
+		return $blogEntry;
+	}
 
 	function outputBlogPost($currentPost,$title,$content,$permaLink){
 		$valueArray['postId']=$currentPost;
@@ -96,7 +141,7 @@
 		echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/title.html")));
 		if(!$permaLink){
 			$titleSafe = str_replace(" ", "_", $title);
-			$valueArray['permaLink']=blogURL.parameterChar.'permalink='.$currentPost.'#'.$titleSafe;
+			$valueArray['pl']=blogURL.parameterChar.'pl='.$currentPost.'#'.$titleSafe;
 			echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/permalink.html")));
 		}
 		$valueArray['content']=$content;
