@@ -12,7 +12,27 @@ wget URL can be found in this repository under "Releases"
 ## Adding content
 Blog posts are stored as html files - you can use whatever mark-up you like.
 
-The first line of the file is interpreted as the post title.
+The first line of the file is interpreted as the post title for the blog itself.
+After that a JSON array is followed defining meta data for open graph protocol (http://ogp.me/), this is used for link previews on social media.
+Example:
+```
+Blog Title
+{
+  "og:title": "Blog Title for Social Media",
+  "og:description": "Some elaborate description", 
+  "og:image": "https://github.com/fluidicon.png"
+}
+# Start Content #
+The actual blog content that might use <b> html tags </b>.
+```
+If not defined, og:title will default to the blog title in the first line.
+
+If not defined, og:description will default to the blog content with its HTML tags stripped.
+
+If not defined, og:image will either be the default defined in blogconfig.php or not omitted.
+
+If not defined, og:type will be "article".
+
 
 The order of the posts is managed by the file names, that's why all files should be named like the following:
 ```
