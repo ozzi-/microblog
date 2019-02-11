@@ -13,4 +13,7 @@
 	// Use ? if your path doesn't have a url parameter itself (index.php)
 	// Use & if your path already has a url paramter (index.php?view=blog)
 	define ( "parameterChar","?"); 
+
+	// Set to 'null' to have no graph image thus the target page picking its own
+	define ( "pathToDefaultOpenGraphImage",null);
 ?>
