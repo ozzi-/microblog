@@ -57,7 +57,7 @@
 				if($listPosts){
 					$lpage=floor(($totalPosts-$currentPost) / blogPostsPerPage)+1;
 					$valueArray['postId']=$currentPost;
-					$valueArray['title']=$title;
+					$valueArray['title']=$blogEntry["title"];
 					$valueArray['postURL']=blogURL.parameterChar.'page='.($lpage);
 					echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/listtitle.html")));
 				}else{
