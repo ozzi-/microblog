@@ -105,7 +105,7 @@
 		$url = !isset($blogEntry["json"]["og:url"])?blogURL.parameterChar.'pl='.$currentPost.'#'.$titleSafe:$blogEntry["json"]["og:url"];
 		$type = !isset($blogEntry["json"]["og:type"])?"article":$blogEntry["json"]["type"];
 		if(pathToDefaultOpenGraphImage!=null){
-			$image = !isset($blogEntry["json"]["og:image"])?pathToDefaultOpenGraphImage:$blogEntry["json"]["image"];
+			$image = !isset($blogEntry["json"]["og:image"])?pathToDefaultOpenGraphImage:$blogEntry["json"]["og:image"];
 		}
 		?>
 		<meta name="description" content="<?= $description?>">
