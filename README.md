@@ -5,7 +5,7 @@ Requires no database, only PHP.
 
 ## 30 Second Installation
 Animated Installation Guide:
-https://asciinema.org/a/fk6GCh7YaCtUagTrRy2PgkM3G
+https://asciinema.org/a/yNyRUz6pDMRGsOBh2SSCwaDne
 
 wget URL can be found in this repository under "Releases"
 
