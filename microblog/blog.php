@@ -125,7 +125,8 @@
 	function loadBlogEntry($filePath){
 		$marker = "# Start Content #";
 		$blogEntry = array();
-		$rawData = file_get_contents($filePath);
+		$rawData = @file_get_contents($filePath);
+		$rawData = $rawData == null? "" : $rawData;
 		$posEndJson = strpos($rawData,$marker);
 		$posStartJson = strpos($rawData, "\n");
 		$blogEntry['rawData'] = $rawData;
