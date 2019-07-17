@@ -20,6 +20,7 @@
 		}elseif(isset($_GET['pl'])||isset($_GET['permalink'])){
 			if(isset($_GET['pl'])){
 				$permaLink=ctype_digit($_GET['pl'])?htmlspecialchars($_GET['pl']):1;
+				$permaLink=($permaLink<1||$permaLink>10000)?1:$permaLink;
 			}else{
 				$permaLink=ctype_digit($_GET['permalink'])?htmlspecialchars($_GET['permalink']):1;
 			}
@@ -41,10 +42,6 @@
 			}
 			$postCounter=0;
 			echo("<br>");
-			
-			ini_set('display_errors', 1);
-			ini_set('display_startup_errors', 1);
-			error_reporting(E_ALL);
 			
 			while( (!$listPosts && $currentPost > $firstPost-blogPostsPerPage && $currentPost>0) || ($listPosts && $currentPost > 0) ){
 				$filePath=dirname(__FILE__)."/content/".$currentPost.'.html';
