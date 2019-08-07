@@ -3,6 +3,12 @@ Easy to setup, integrate into existing pages and customize microblog.
 
 **Requires no database, only a webserver & PHP.**
 
+The overview of all blog posts:
+![screenshot overview](https://i.imgur.com/wX2SDOu.png)
+
+A blog post:
+![screenshot blog psot](https://i.imgur.com/G0jtHh2.png)
+
 
 ## Live demo
 Everybody likes live demos! 
