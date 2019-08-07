@@ -135,11 +135,19 @@
 		$titleSafe = str_replace(" ", "_", $title);
 		$valueArray['postId']=$currentPost;
 		$valueArray['title']=$title;
-		$protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === 0 ? 'https://' : 'http://';
-		$permaLinkAbsolute = $protocol.$_SERVER['HTTP_HOST'].strtok($_SERVER['REQUEST_URI'],'?').parameterChar.'pl='.$currentPost.'%23'.$titleSafe;
+
+		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
+		$base = $protocol.$_SERVER['HTTP_HOST'];
+		$permaLinkAbsolute = $base."/".urlencode(blogURL.parameterChar.'pl='.$currentPost.'#'.$titleSafe);
+		$imgLinkAbsolute = $base.strtok($_SERVER['REQUEST_URI'],'?')."/templates/img/";
 		$socialArray['socialbuttonURL']=$permaLinkAbsolute;
 		$socialArray['socialbuttonText']=$title;
+		$svgs = glob(dirname(__FILE__)."/templates/img/*.{svg}", GLOB_BRACE);
+		foreach($svgs as $svg) {
+			$socialArray['socialButtonImg_'.basename($svg)]=file_get_contents($svg);
+		}
 		$valueArray['socialbuttons']=injectTemplate($socialArray,file_get_contents(dirname(__FILE__)."/templates/socialbuttons.html"));
+		
 		echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/title.html")));
 		if(!$permaLink){
 			$valueArray['pl']=blogURL.parameterChar.'pl='.$currentPost.'#'.$titleSafe;
