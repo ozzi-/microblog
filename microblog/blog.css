@@ -44,3 +44,10 @@
 
 .blogFooter{
 }
+
+.socialButton{
+	width:70px;
+	display:inline;
+	margin-right:5px;
+	padding:2px;
+}

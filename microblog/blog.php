@@ -3,14 +3,14 @@
 
 	function renderBlog(){
 		$totalPosts=count(glob(dirname(__FILE__)."/content/*"));
-		$totalPages=ceil($totalPosts/blogPostsPerPage);	
+		$totalPages=ceil($totalPosts/blogPostsPerPage);
 		$permaLink=false;
-		
+
 		echo('<style>'.file_get_contents(dirname(__FILE__)."/blog.css").'</style>');
 		$valueArray=[];
 		$valueArray['linkHome']=blogURL;
 		echo("<span class=\"blogMain\">");
-		
+
 		if (isset($_GET['page'])) {
 			$listPosts=false;
 			$page=ctype_digit($_GET['page'])?htmlspecialchars($_GET['page']):1;
@@ -42,11 +42,11 @@
 			}
 			$postCounter=0;
 			echo("<br>");
-			
+
 			while( (!$listPosts && $currentPost > $firstPost-blogPostsPerPage && $currentPost>0) || ($listPosts && $currentPost > 0) ){
 				$filePath=dirname(__FILE__)."/content/".$currentPost.'.html';
 				$blogEntry = loadBlogEntry($filePath);
-				
+
 				if($permaLink!==false){
 					renderMetaData($blogEntry,$currentPost);
 				}
@@ -70,7 +70,6 @@
 		echo("</span>");
 	}
 
-	
 	function outputPageNav($totalPages,$navPage,$listPosts){
 		echo('<center><a href="'.blogURL.parameterChar.'page=1" class="blogPageLink">&lt;&lt;</a>|');
 		if($totalPages==1){
@@ -92,8 +91,7 @@
 		}
 		echo('<a href="'.blogURL.parameterChar.'page='.$totalPages.'" class="blogPageLink">&gt;&gt; </a> </center>');
 	}
-	
-	
+
 	function renderMetaData($blogEntry,$currentPost){
 		$title =  !isset($blogEntry["json"]["og:title"])?$blogEntry["title"]:$blogEntry["json"]["og:title"];
 		$preview = strip_tags($blogEntry["content"]);
@@ -118,7 +116,7 @@
 			?><meta property="og:image" content="<?= $image ?>"/><?php
 		}
 	}
-	
+
 	function loadBlogEntry($filePath){
 		$marker = "# Start Content #";
 		$blogEntry = array();
@@ -134,11 +132,16 @@
 	}
 
 	function outputBlogPost($currentPost,$title,$content,$permaLink){
+		$titleSafe = str_replace(" ", "_", $title);
 		$valueArray['postId']=$currentPost;
 		$valueArray['title']=$title;
+		$protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === 0 ? 'https://' : 'http://';
+		$permaLinkAbsolute = $protocol.$_SERVER['HTTP_HOST'].strtok($_SERVER['REQUEST_URI'],'?').parameterChar.'pl='.$currentPost.'%23'.$titleSafe;
+		$socialArray['socialbuttonURL']=$permaLinkAbsolute;
+		$socialArray['socialbuttonText']=$title;
+		$valueArray['socialbuttons']=injectTemplate($socialArray,file_get_contents(dirname(__FILE__)."/templates/socialbuttons.html"));
 		echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/title.html")));
 		if(!$permaLink){
-			$titleSafe = str_replace(" ", "_", $title);
 			$valueArray['pl']=blogURL.parameterChar.'pl='.$currentPost.'#'.$titleSafe;
 			echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/permalink.html")));
 		}
@@ -151,7 +154,7 @@
 		$boldEnd=$active?"</b>":'';
 		echo('&nbsp;<a href="'.blogURL.parameterChar.'page='.$i.'" class="blogCurrentPageLink">'.$boldStart.'# '.($i).$boldEnd.'</a>|');
 	}
-	
+
 	function injectTemplate($valueArray,$template){
 		$needle = "{{";
 		$needleLength=strlen($needle);
