@@ -1,15 +1,20 @@
 # µblog
-Easy to setup, integrate into existing pages and customize micro blog.
+Easy to setup, integrate into existing pages and customize microblog.
 
-Requires no database, only PHP.
+**Requires no database, only a webserver & PHP.**
 
-## 30 Second Installation
-Animated Installation Guide:
-https://asciinema.org/a/yNyRUz6pDMRGsOBh2SSCwaDne
 
-wget URL can be found in this repository under "Releases"
+## Live demo
+Everybody likes live demos! 
+https://zgheb.com/i?v=blog
+
+## The 30 Second Installation
+Video Demo of Installation - https://vimeo.com/352504569
+ASCII Demo of Installation - https://asciinema.org/a/yNyRUz6pDMRGsOBh2SSCwaDne
 
 ## Adding content
+Video Demo on how to add content - https://vimeo.com/352504569
+
 Blog posts are stored as html files - you can use whatever mark-up you like.
 
 The first line of the file is interpreted as the post title for the blog itself.
@@ -39,11 +44,10 @@ The order of the posts is managed by the file names, that's why all files should
 {incrementing number}.html
 ```
 
-## Configuration
-The file "blogconfig.php" contains three variables, thats all it takes to configure the your blog.
-
 ## Changing the design
-In the templates folder you can tweak µblog design with ease.
+Video Demo on how to do customization - https://vimeo.com/352504544
+
+In the templates folder you can tweak µblog layout and design with ease.
 
 Terms in dobule curly brackets will be replaced by µblog automagically.
 
@@ -55,6 +59,7 @@ Example of header.html:
 </div><br>
 ```
 
-# Live demo
-Everybody likes live demos! 
-https://zgheb.com/i?v=blog
+Furthermore, many CSS classes for all elements are defined in blog.css.
+
+## Configuration
+The file "blogconfig.php" contains four variables, thats all it takes to configure the your blog.
