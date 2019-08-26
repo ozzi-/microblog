@@ -9,7 +9,7 @@
 		echo('<style>'.file_get_contents(dirname(__FILE__)."/blog.css").'</style>');
 		$valueArray=[];
 		$valueArray['linkHome']=blogURL;
-		echo("<span class=\"blogMain\">");
+		echo("<div class=\"blogMain\">");
 
 		if (isset($_GET['page'])) {
 			$listPosts=false;
@@ -67,7 +67,7 @@
 				outputPageNav($totalPages,$page,$listPosts);
 			}
 		}
-		echo("</span>");
+		echo("</div>");
 	}
 
 	function outputPageNav($totalPages,$navPage,$listPosts){
