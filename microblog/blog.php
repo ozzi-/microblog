@@ -88,7 +88,17 @@
 		echo('<a href="'.blogURL.parameterChar.'page='.$totalPages.'" class="blogPageLink">&gt;&gt; </a> </center>');
 	}
 
-	function renderMetaData($blogEntry,$currentPost){
+	function outputMetaData(){
+		if(isset($_GET["pl"]) || isset($_GET["permalink"])){
+			$permalinkID = isset($_GET["pl"]) ? $_GET["pl"] : $_GET["permalink"];
+			if(ctype_digit($permalinkID)){
+				$filePath=dirname(__FILE__)."/content/".intval($permalinkID).'.html';
+				outputMetaDataInternal(loadBlogEntry($filePath),$currentPost);
+			}
+		}
+	}
+
+	function outputMetaDataInternal($blogEntry,$currentPost){
 		$title =  !isset($blogEntry["json"]["og:title"])?$blogEntry["title"]:$blogEntry["json"]["og:title"];
 		$preview = strip_tags($blogEntry["content"]);
 		$description = !isset($blogEntry["json"]["og:description"])?$preview:$blogEntry["json"]["og:description"];
