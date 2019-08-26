@@ -20,10 +20,10 @@
 		}elseif(isset($_GET['pl'])||isset($_GET['permalink'])){
 			if(isset($_GET['pl'])){
 				$permaLink=ctype_digit($_GET['pl'])?htmlspecialchars($_GET['pl']):1;
-				$permaLink=($permaLink<1||$permaLink>10000)?1:$permaLink;
 			}else{
 				$permaLink=ctype_digit($_GET['permalink'])?htmlspecialchars($_GET['permalink']):1;
 			}
+			$permaLink=($permaLink<1||$permaLink>99999)?1:$permaLink;
 			$firstPost=$permaLink+blogPostsPerPage-1;
 			$currentPost=$permaLink;
 			$listPosts=false;
