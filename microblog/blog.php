@@ -47,10 +47,6 @@
 				$filePath=dirname(__FILE__)."/content/".$currentPost.'.html';
 				$blogEntry = loadBlogEntry($filePath);
 
-				if($permaLink!==false){
-					renderMetaData($blogEntry,$currentPost);
-				}
-
 				if($listPosts){
 					$lpage=floor(($totalPosts-$currentPost) / blogPostsPerPage)+1;
 					$valueArray['postId']=$currentPost;
