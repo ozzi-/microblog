@@ -93,7 +93,7 @@
 			$permalinkID = isset($_GET["pl"]) ? $_GET["pl"] : $_GET["permalink"];
 			if(ctype_digit($permalinkID)){
 				$filePath=dirname(__FILE__)."/content/".intval($permalinkID).'.html';
-				outputMetaDataInternal(loadBlogEntry($filePath),$currentPost);
+				outputMetaDataInternal(loadBlogEntry($filePath),$permalinkID);
 			}
 		}
 	}
