@@ -148,6 +148,7 @@
 		$imgLinkAbsolute = $base.strtok($_SERVER['REQUEST_URI'],'?')."/templates/img/";
 		$socialArray['socialbuttonURL']=$permaLinkAbsolute;
 		$socialArray['socialbuttonText']=urlencode($title);
+		$socialArray['socialbuttonTextRaw']=$title;
 		$svgs = glob(dirname(__FILE__)."/templates/img/*.{svg}", GLOB_BRACE);
 		foreach($svgs as $svg) {
 			$socialArray['socialButtonImg_'.basename($svg)]=file_get_contents($svg);
