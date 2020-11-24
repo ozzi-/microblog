@@ -25,6 +25,8 @@ The following video shows how simple the "installation" is: https://vimeo.com/48
 
 Basically clone the git repo into your htdocs folder, assuming you have PHP and Apache running, you are already done.
 
+The file "index.php" is but a skeleton which shows how you could include µblog onto your existing page or might serve as a starting point when building a blog from scratch.
+
 ## Adding content
 Blog posts are stored as html files in the folder "content".
 
