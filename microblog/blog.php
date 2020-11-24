@@ -1,112 +1,84 @@
 <?php
 	include("blogconfig.php");
 
-	function renderBlog(){
-		$totalPosts=count(glob(dirname(__FILE__)."/content/*"));
-		$totalPages=ceil($totalPosts/blogPostsPerPage);
-		$permaLink=false;
+	$db = loadDB();
 
-		echo('<style>'.file_get_contents(dirname(__FILE__)."/blog.css").'</style>');
-		$valueArray=[];
-		$valueArray['linkHome']=blogURL;
-		echo("<div class=\"blogMain\">");
-
-		if (isset($_GET['page'])) {
-			$listPosts=false;
-			$page=ctype_digit($_GET['page'])?htmlspecialchars($_GET['page']):1;
-			$page=($page<1||$page>10000)?1:$page;
-			$firstPost=($totalPosts)-($page*blogPostsPerPage)+blogPostsPerPage;
-			$currentPost=$firstPost;
-		}elseif(isset($_GET['pl'])||isset($_GET['permalink'])){
-			if(isset($_GET['pl'])){
-				$permaLink=ctype_digit($_GET['pl'])?htmlspecialchars($_GET['pl']):1;
-			}else{
-				$permaLink=ctype_digit($_GET['permalink'])?htmlspecialchars($_GET['permalink']):1;
-			}
-			$permaLink=($permaLink<1||$permaLink>99999)?1:$permaLink;
-			$firstPost=$permaLink+blogPostsPerPage-1;
-			$currentPost=$permaLink;
-			$listPosts=false;
+	function outputBlogPosts(){
+		global $db;
+		if(isset($_GET[PLS]) || isset($_GET[PLL])){
+			outputSpecificBlogPost($db,getSetPermaLinkID());
+		}elseif(isset($_GET["category"])){
+			outputCategoryPage();
 		}else{
-			echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/header.html")));
-			$page="1";
-			$currentPost=$totalPosts;
-			$listPosts=true;
+			outputBlogPostsInternal($db);
 		}
-
-		if ($totalPosts===0) {
-			echo ("Nothing here yet, make sure to come back and check again soon!");
-		}else{
-			if(!$permaLink && !$listPosts){
-				outputPageNav($totalPages,$page,$listPosts);
-			}
-			$postCounter=0;
-			echo("<br>");
-
-			while( (!$listPosts && $currentPost > $firstPost-blogPostsPerPage && $currentPost>0) || ($listPosts && $currentPost > 0) ){
-				$filePath=dirname(__FILE__)."/content/".$currentPost.'.html';
-				$blogEntry = loadBlogEntry($filePath);
-
-				if($listPosts){
-					$lpage=floor(($totalPosts-$currentPost) / blogPostsPerPage)+1;
-					$valueArray['postId']=$currentPost;
-					$valueArray['title']=$blogEntry["title"];
-					$valueArray['postURL']=blogURL.parameterChar.'page='.($lpage);
-					echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/listtitle.html")));
-				}else{
-					outputBlogPost($currentPost,$blogEntry["title"],$blogEntry["content"],$permaLink);
-				}
-				$currentPost--;
-			}
-			echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/spacer.html")));
-			if(!$permaLink && !$listPosts){
-				outputPageNav($totalPages,$page,$listPosts);
-			}
-		}
-		echo("</div>");
 	}
 
-	function outputPageNav($totalPages,$navPage,$listPosts){
-		echo('<center><a href="'.blogURL.parameterChar.'page=1" class="blogPageLink">&lt;&lt;</a>|');
-		if($totalPages==1){
-			echo('&nbsp;<a href="'.blogURL.parameterChar.'page='.($navPage).'" class="blogPageLink"># '.($navPage).'</a>|');
-		}else{
-			if ($navPage-1>=1){
-				if(!($navPage+1<=$totalPages) && $navPage==$totalPages && ($navPage-2)>=1){
-					outputPageLink($navPage-2);
-				}
-				outputPageLink($navPage-1);
-			}
-			outputPageLink($navPage,true&&!$listPosts);
-			if ($navPage+1<=$totalPages){
-				outputPageLink($navPage+1);
-				if(!($navPage-1>=1)&&$navPage==1&&($navPage+2<=$totalPages)){
-					outputPageLink($navPage+2);
-				}
+	function outputCategoryPage(){
+		global $db;
+		$categoryIsList = $_GET["category"]=="list";
+		outputHeaderNoNavigation(!$categoryIsList);
+		if(isset($db["categories"][$_GET["category"]])){
+			outputCategoryPosts();
+		}else if($categoryIsList){
+			outputCategoryBadges();
+		}
+	}
+
+	function outputCategoryPosts(){
+		global $db;
+		$values["category"] = htmlspecialchars($_GET["category"], ENT_QUOTES, 'UTF-8');
+		outputTemplate($values,"categoryfilter");
+		foreach ($db as &$entry) {
+			if(isset($entry[ID]) && in_array($entry[ID],$db["categories"][$_GET["category"]])){
+				$values["id"]=$entry[ID];
+				$values["title"]=$entry[TITLE];
+				$values["href"]=blogParameterChar.PLS.'='.$entry[ID];
+				outputTemplate($values,"postlink");
 			}
 		}
-		echo('<a href="'.blogURL.parameterChar.'page='.$totalPages.'" class="blogPageLink">&gt;&gt; </a> </center>');
+	}
+
+	function outputCategoryBadges(){
+		global $db;
+		foreach(array_keys($db["categories"]) as $category){
+			$values['category']=$category;
+			$values["categoryHref"]=blogParameterChar.'category='.$category;
+			$values['categoryCount']=" [".count($db["categories"][$category])."]";
+			outputTemplate($values,"category");
+		}
 	}
 
 	function outputMetaData(){
-		if(isset($_GET["pl"]) || isset($_GET["permalink"])){
-			$permalinkID = isset($_GET["pl"]) ? $_GET["pl"] : $_GET["permalink"];
-			if(ctype_digit($permalinkID)){
-				$filePath=dirname(__FILE__)."/content/".intval($permalinkID).'.html';
-				outputMetaDataInternal(loadBlogEntry($filePath),$permalinkID);
+		global $db;
+		if(isset($_GET[PLS]) || isset($_GET[PLL])){
+			$permalinkID = getSetPermaLinkID();
+			$filePath=dirname(__FILE__).DIRECTORY_SEPARATOR."content".DIRECTORY_SEPARATOR.$permalinkID.'.html';
+			foreach ($db as &$entry) {
+				if(isset($entry[ID]) && $entry[ID] == $permalinkID){
+					$content = loadBlogPostContentWithCache($entry);
+					outputMetaDataInternal($entry, $content);
+				}
 			}
 		}
 	}
 
-	function outputMetaDataInternal($blogEntry,$currentPost){
-		$title =  !isset($blogEntry["json"]["og:title"])?$blogEntry["title"]:$blogEntry["json"]["og:title"];
-		$preview = strip_tags($blogEntry["content"]);
-		$description = !isset($blogEntry["json"]["og:description"])?$preview:$blogEntry["json"]["og:description"];
+	$contentCache=null;
+	function loadBlogPostContentWithCache($entry){
+		global $contentCache;
+		$contentCache = ($contentCache==null) ? loadBlogPostContent($entry) :  $contentCache;
+		return $contentCache;
+	}
+
+	function outputMetaDataInternal($blogEntry, $content){
+		$title =  $blogEntry["og:title"];
+		$preview = addslashes(strip_tags($content));
+		$description = !isset($blogEntry["og:description"])?$preview:$blogEntry["og:description"];
 		$titleSafe = str_replace(" ", "_", $title);
-		$url = !isset($blogEntry["json"]["og:url"])?blogURL.parameterChar.'pl='.$currentPost.'#'.$titleSafe:$blogEntry["json"]["og:url"];
-		$type = !isset($blogEntry["json"]["og:type"])?"article":$blogEntry["json"]["type"];
-		if(pathToDefaultOpenGraphImage!=null){
-			$image = !isset($blogEntry["json"]["og:image"])?pathToDefaultOpenGraphImage:$blogEntry["json"]["og:image"];
+		$url = !isset($blogEntry["og:url"])?blogURL.blogParameterChar.PLS.'='.$blogEntry[ID].'#'.$titleSafe:$blogEntry["og:url"];
+		$type = !isset($blogEntry["og:type"])?"article":$blogEntry["type"];
+		if(blogDefaultOpenGraphImagePath!=null){
+			$image = !isset($blogEntry["og:image"])?blogDefaultOpenGraphImagePath:$blogEntry["og:image"];
 		}
 		?>
 		<meta name="description" content="<?= $description?>">
@@ -118,82 +90,213 @@
 		<meta name="twitter:title" content="<?= $title ?>" />
 		<meta name="twitter:description" content="<?= $description?>" />
 		<?php
-		if(pathToDefaultOpenGraphImage!=null){
+		if(blogDefaultOpenGraphImagePath!=null){
 			?><meta property="og:image" content="<?= $image ?>"/><?php
 		}
 	}
 
-	function loadBlogEntry($filePath){
-		$marker = "# Start Content #";
-		$blogEntry = array();
-		$rawData = @file_get_contents($filePath);
-		$rawData = $rawData == null? "" : $rawData;
-		$posEndJson = strpos($rawData,$marker);
-		$posStartJson = strpos($rawData, "\n");
-		$blogEntry['rawData'] = $rawData;
-		$blogEntry['title'] = strtok($rawData, "\n");
-		$blogEntry['json'] = json_decode(substr($rawData, $posStartJson, $posEndJson-$posStartJson),true);
-		$blogEntry['content'] = substr($rawData,$posEndJson+strlen($marker));
-		return $blogEntry;
+	function outputBlogPostsInternal($db){
+		$offset = 0;
+		$page = 1;
+		if(isset($_GET["page"])){
+			$page = intval($_GET["page"]);
+			$offset = ($page-1)*blogPostsPerPage;
+		}
+		$hasMorePages=$page>=ceil((count($db)-1)/blogPostsPerPage);
+		$values['linkHome']=blogURL;
+		$values['pageBackHref']=blogParameterChar.'page='.($page-1);
+		$values['pageForwardHref']=blogParameterChar.'page='.($page+1);
+		$values['hasNewerPosts']=($page<=1)?"display:none":"";
+		$values['hasOlderPosts']=$hasMorePages?"display:none":"";
+		$values['byCategoryHref']=blogParameterChar.'category=list';
+		$values['showCategoryHref']="";
+		outputTemplate($values,"header");
+
+		$index = 0;
+		$amountAdded = 0;
+		foreach ($db as &$entry) {
+			if(isset($entry[ID])){
+				$index++;
+				if($index>$offset && $amountAdded<blogPostsPerPage){
+					$amountAdded ++;
+					$content = loadBlogPostContent($entry);
+					outputBlogPost($entry, $content,false);
+				}
+			}
+		}
+		outputTemplate($values,"footer");
 	}
 
-	function outputBlogPost($currentPost,$title,$content,$permaLink){
-		$titleSafe = str_replace(" ", "_", $title);
-		$valueArray['postId']=$currentPost;
-		$valueArray['title']=$title;
-
-		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
-		$base = $protocol.$_SERVER['HTTP_HOST'];
-		$permaLinkAbsolute = $base."/".urlencode(blogURL.parameterChar.'pl='.$currentPost.'#'.$titleSafe);
-		$imgLinkAbsolute = $base.strtok($_SERVER['REQUEST_URI'],'?')."/templates/img/";
-		$socialArray['socialbuttonURL']=$permaLinkAbsolute;
-		$socialArray['socialbuttonText']=urlencode($title);
-		$socialArray['socialbuttonTextRaw']=$title;
-		$svgs = glob(dirname(__FILE__)."/templates/img/*.{svg}", GLOB_BRACE);
-		foreach($svgs as $svg) {
-			$socialArray['socialButtonImg_'.basename($svg)]=file_get_contents($svg);
+	function outputSpecificBlogPost($db,$id){
+		outputHeaderNoNavigation(true);
+		foreach ($db as &$entry) {
+			if(isset($entry[ID]) && $entry[ID] == $id){
+				$content = loadBlogPostContentWithCache($entry);
+				outputBlogPost($entry,$content,true);
+			}
 		}
-		$valueArray['socialbuttons']=injectTemplate($socialArray,file_get_contents(dirname(__FILE__)."/templates/socialbuttons.html"));
+	}
+
+	function outputHeaderNoNavigation($showCategoryHref){
+		$values['linkHome']=blogURL;
+		$values['pageBackHref']="#";
+		$values['pageForwardHref']="#";
+		$values['hasNewerPosts']="display:none";
+		$values['hasOlderPosts']="display:none";
+		$values['byCategoryHref']=blogParameterChar.'category=list';
+		$values['showCategoryHref']=$showCategoryHref?"":"display:none;";
+		outputTemplate($values,"header");
+	}
+
+	function outputBlogPost($blogPost, $content, $isPermaLink){
+		$values['postId']=$blogPost[ID];
+		$values['title']=$blogPost[TITLE];
+		$values['content']=$content;
+		$titleSafe = str_replace(" ", "_", $blogPost[TITLE]);
+		$values['socialbuttons']=buildSocialButtons($blogPost,$titleSafe);
 		
-		echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/title.html")));
-		if(!$permaLink){
-			$valueArray['pl']=blogURL.parameterChar.'pl='.$currentPost.'#'.$titleSafe;
-			echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/permalink.html")));
+		outputTemplate($values,"title");
+		if(!$isPermaLink){
+			$values['pl']=blogURL.blogParameterChar.PLS.'='.$blogPost[ID].'#'.$titleSafe;
+			outputTemplate($values,"permalink");
 		}
-		$valueArray['content']=$content;
-		echo(injectTemplate($valueArray,file_get_contents(dirname(__FILE__)."/templates/content.html")));
+		$values['categories']="";
+		if(isset($blogPost["categories"])){
+			$categories="";
+			foreach($blogPost["categories"] as $category) {
+				$values['category']=$category;
+				$values["categoryHref"]=blogParameterChar.'category='.$category;
+				$values["categoryCount"]="";
+				$categories.=(injectTemplate($values,file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR."templates".DIRECTORY_SEPARATOR."category.html")));
+			}	
+			$values['categories']=$categories;
+		}
+		outputTemplate($values,"content");
+		echo("<br><br>");
 	}
 
-	function outputPageLink($i,$active=false){
-		$boldStart=$active?"<b>":'';
-		$boldEnd=$active?"</b>":'';
-		echo('&nbsp;<a href="'.blogURL.parameterChar.'page='.$i.'" class="blogCurrentPageLink">'.$boldStart.'# '.($i).$boldEnd.'</a>|');
-	}
-
-	function injectTemplate($valueArray,$template){
+	function injectTemplate($values,$template){
 		$needle = "{{";
 		$needleLength=strlen($needle);
 		$needleEnd = "}}";
 		$lastPos = 0;
 		$variables = array();
 		$index=0;
+
 		while (($lastPos = strpos($template, $needle, $lastPos))!== false) {
 			if(($lastPosEnd = strpos($template, $needleEnd, $lastPos))!== false){
 				$varLength=$lastPosEnd-$lastPos-$needleLength;
 				$var=substr($template,$lastPos+$needleLength,$varLength);
-				if(!isset($valueArray[$var])){
-					die("invalid variable '$var' in template");
+				if(!isset($values[$var])){
+					die("Invalid variable '$var' in template");
 				}
 				$variables[$index]=$var;
 				$index++;
 			}else{
-				die("error in template, missing ".$needleEnd);
+				die("Error in template, missing '$needleEnd'");
 			}
 			$lastPos=$lastPos + $varLength;
 		}
+
 		foreach ($variables as $variable) {
-			$template=str_replace($needle.$variable.$needleEnd,$valueArray[$variable],$template);
+			$template=str_replace($needle.$variable.$needleEnd,$values[$variable],$template);
 		}
 		return $template;
+	}
+
+	function buildSocialButtons($blogPost,$titleSafe){
+		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
+		$base = $protocol.$_SERVER['HTTP_HOST'];
+		$permaLinkAbsolute = $base."/".urlencode(blogURL.blogParameterChar.PLS.'='.$blogPost[ID].'#'.$titleSafe);
+		$socialArray['socialbuttonURL']=$permaLinkAbsolute;
+		$socialArray['socialbuttonText']=urlencode($blogPost[TITLE]);
+		$socialArray['socialbuttonTextRaw']=$blogPost[TITLE];
+		$svgs = glob(dirname(__FILE__).DIRECTORY_SEPARATOR."templates".DIRECTORY_SEPARATOR."img".DIRECTORY_SEPARATOR."*.{svg}", GLOB_BRACE);
+		foreach($svgs as $svg) {
+			$socialArray['socialButtonImg_'.basename($svg)]=file_get_contents($svg);
+		}
+		return injectTemplate($socialArray,file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR."templates".DIRECTORY_SEPARATOR."socialbuttons.html"));
+	}
+
+	function loadBlogPostContent($blogPost){
+		$path = dirname(__FILE__).DIRECTORY_SEPARATOR."content".DIRECTORY_SEPARATOR.intval($blogPost[ID]).'.html';
+		$content = @file_get_contents($path);
+		if($content === FALSE){
+			die("Could not load blog post content ".$path);
+		}
+		return $content;
+	}
+
+	function outputTemplate($values,$template){
+		echo(injectTemplate($values,file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR."templates".DIRECTORY_SEPARATOR.$template.".html")));		
+	}
+
+	function getSetPermaLinkID(){
+		return intval(isset($_GET[PLS]) ? $_GET[PLS] : $_GET[PLL]);
+	}
+
+	// **********
+	// *** DB ***
+	// **********
+
+	function loadDB(){
+		$db = @file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR.blogDBName);
+		if($db === FALSE) {
+	      die("Could not open DB from ".$dbJsonPath);
+		}
+		$dbObj = json_decode($db,true);
+		if($dbObj==NULL){
+			switch (json_last_error()) {
+				case JSON_ERROR_DEPTH:
+					die('Could not parse DB - Maximum stack depth exceeded');
+				case JSON_ERROR_STATE_MISMATCH:
+					die('Could not parse DB - Underflow or the modes mismatch');
+				case JSON_ERROR_CTRL_CHAR:
+					die('Could not parse DB - Unexpected control character found');
+				case JSON_ERROR_SYNTAX:
+					die('Could not parse DB - Syntax error, malformed JSON');
+				case JSON_ERROR_UTF8:
+					die('Could not parse DB - Malformed UTF-8 characters, possibly incorrectly encoded');
+				default:
+					die('Could not parse DB - Unknown error');
+			}
+		}
+		return validateAndBuild($dbObj);
+	}
+
+	function validateAndBuild($db){
+		// validate
+		$ids = array();
+		foreach ($db as &$entry) {
+			if(!(isset($entry[TITLE]) && isset($entry[ID]))){
+				die("DB contains entry without 'title' or 'id'");
+			}
+			if(in_array($entry[ID],$ids)){
+				die("DB contains duplicate id (".$entry[ID].")");
+			}
+			array_push($ids, $entry[ID]);
+		}
+		// sort
+		usort($db, "sortByOrder");
+		// build
+		foreach ($db as &$entry) {
+			if(isset($entry["categories"])){
+				foreach ($entry["categories"] as &$category) {
+					if(!isset($db["categories"][$category])){
+						$db["categories"][$category]=array();
+					}
+					array_push($db["categories"][$category],$entry[ID]);
+				}
+			}
+		}
+		uasort($db["categories"], "sortByCount");
+		return $db;
+	}
+
+	function sortByOrder($a, $b) {
+		return $a[ID] < $b[ID];
+	}
+	function sortByCount($a, $b) {
+		return count($a) < count($b);
 	}
 ?>

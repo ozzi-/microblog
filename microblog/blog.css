@@ -54,7 +54,7 @@
 }
 .socialButtonIcon{
 	position: relative;
-	top:2px;
+	top:-2px;
 }
 
 .socialButtonLink{
@@ -66,3 +66,8 @@
 	color:black;
 }
 
+.img-responsive{
+	display: block;
+	max-width: 100%;
+	height: auto;
+}

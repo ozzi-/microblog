@@ -1,0 +1,34 @@
+[
+	{
+		"title": "23.11.2020 - Hello World",
+		"id": 1,
+		"categories": ["microblog","hello world"],
+		"og:title": "Hello World",
+  		"og:description": "This is the first post",
+  		"og:image": "https://zgheb.com/templates/img/og-71.png"
+	},
+	{
+		"title": "24.11.2020 - Complex Things",
+		"id": 2,
+		"categories": ["programming","javascript","guide"],
+		"og:title": "Complex Things",
+		"og:description": "A placeholder for complex things",
+		"og:image": "https://zgheb.com/templates/img/og-70.png"
+	},
+	{
+		"title": "24.11.2020 - Answer to the Ultimate Question of Life, the Universe, and Everything",
+		"id": 3,
+		"categories": ["answers","guide"],
+		"og:title": "Answer to the Ultimate Question of Life, the Universe, and Everything",
+		"og:description": "42, what else?",
+		"og:image": "https://zgheb.com/templates/img/og-69.png"
+	},
+	{
+		"title": "25.11.2020 - Lorem Ipsum",
+		"id": 4,
+		"categories": ["programming","guide"],
+		"og:title": "Lorem Ipsum",
+		"og:description": "Lorem Ipsum",
+		"og:image": "https://zgheb.com/templates/img/og-65.png"
+	}
+]
