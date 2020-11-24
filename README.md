@@ -4,24 +4,30 @@ A micro blog that is easy to setup, integrate and customize.
 **Requires no database, only a webserver & PHP.**
 
 A blog post:
+
 ![screenshot blog post](https://i.imgur.com/HcZxWqx.png)
 
 Filtering by category:
+
 ![screenshot blog category list](https://i.imgur.com/wpaxhjr.png)
 
 All categories:
+
 ![screenshot blog all categories](https://i.imgur.com/xGRJ8b6.png)
 
 
 ## Live demo
-Everybody likes live demos! 
+You can find µblog in action on the authors blog:
 https://zgheb.com/i?v=blog
 
 ## The 30 Second Installation
-Video Demo of Installation - https://vimeo.com/352504569 - TODO
+The following video shows how simple the "installation" is: https://vimeo.com/483067404
+Basically clone the git repo into your htdocs folder, assuming you have PHP and Apache running, you are already done.
 
 ## Adding content
 Blog posts are stored as html files in the folder "content".
+A video shows how its done: https://vimeo.com/483067702
+
 When adding a new blog post, add the required description into db.json as such:
 ```json
 {
@@ -57,7 +63,7 @@ If not defined, og:type will be "article".
 Terms in dobule curly brackets will be replaced by µblog automagically.
 
 Let us assume you wish to change the blog header, the according file is called "header.html":
-```
+```html
 <div class='blogTitle'>
 	<a href="{{linkHome}}" class="linkNoDecoration">A new &#181;blog instance</a>
 </div>
@@ -69,25 +75,25 @@ Let us assume you wish to change the blog header, the according file is called "
 </div>
 ```
 Edit this HTML as you wish.
-A video on how to do customization can be found here: https://vimeo.com/352504544
+A video on how to do customization can be found here: https://vimeo.com/483067522
 
 Furthermore, many CSS classes for all elements are defined in blog.css.
 
 ## Configuration
 The file "blogconfig.php" contains all that is required to configure your µblog instance.
 ```php
-	// Posts displayed per page
-	define ( "blogPostsPerPage", 3 );
+// Posts displayed per page
+define ( "blogPostsPerPage", 3 );
 
-	// Link to the blog page itself
-	define ( "blogURL", "index.php");
+// Link to the blog page itself
+define ( "blogURL", "index.php");
 
-	// The character appended after 'blogContentPath'.
-	// Use either ? or &.
-	// Use ? if your path doesn't have a url parameter itself (index.php)
-	// Use & if your path already has a url paramter (index.php?view=blog)
-	define ( "blogParameterChar","?");
+// The character appended after 'blogContentPath'.
+// Use either ? or &.
+// Use ? if your path doesn't have a url parameter itself (index.php)
+// Use & if your path already has a url paramter (index.php?view=blog)
+define ( "blogParameterChar","?");
 
-	// Set to 'null' to have no graph image thus the target page picking its own
-	define ( "blogDefaultOpenGraphImagePath", null);
+// Set to 'null' to have no graph image thus the target page picking its own
+define ( "blogDefaultOpenGraphImagePath", null);
 ```
