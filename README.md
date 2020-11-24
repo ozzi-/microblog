@@ -85,9 +85,6 @@ Furthermore, many CSS classes for all elements are defined in blog.css.
 ## Configuration
 The file "blogconfig.php" contains all that is required to configure your µblog instance.
 ```php
-// Posts displayed per page
-define ( "blogPostsPerPage", 3 );
-
 // Link to the blog page itself
 define ( "blogURL", "index.php");
 
@@ -99,4 +96,7 @@ define ( "blogParameterChar","?");
 
 // Set to 'null' to have no graph image thus the target page picking its own
 define ( "blogDefaultOpenGraphImagePath", null);
+
+// Posts displayed per page
+define ( "blogPostsPerPage", 1 );
 ```
