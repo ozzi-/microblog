@@ -1,24 +1,21 @@
-<?php
+<?php	
 	include("blogconfig.php");
-
-	$db = loadDB();
-
+	include("db.php");
+		
 	function outputBlogPosts(){
-		global $db;
 		if(isset($_GET[PLS]) || isset($_GET[PLL])){
-			outputSpecificBlogPost($db,getSetPermaLinkID());
+			outputSpecificBlogPost(getSetPermaLinkID());
 		}elseif(isset($_GET["category"])){
 			outputCategoryPage();
 		}else{
-			outputBlogPostsInternal($db);
+			outputBlogPostsInternal(DB::$obj);
 		}
 	}
 
 	function outputCategoryPage(){
-		global $db;
 		$categoryIsList = $_GET["category"]=="list";
-		outputHeaderNoNavigation(!$categoryIsList);
-		if(isset($db["categories"][$_GET["category"]])){
+		outputHeaderNoNavigation();
+		if(isset(DB::$obj["categories"][$_GET["category"]]) || $_GET["category"]=="all"){
 			outputCategoryPosts();
 		}else if($categoryIsList){
 			outputCategoryBadges();
@@ -26,35 +23,37 @@
 	}
 
 	function outputCategoryPosts(){
-		global $db;
 		$values["category"] = htmlspecialchars($_GET["category"], ENT_QUOTES, 'UTF-8');
 		outputTemplate($values,"categoryfilter");
-		foreach ($db as &$entry) {
-			if(isset($entry[ID]) && in_array($entry[ID],$db["categories"][$_GET["category"]])){
+		foreach (DB::$obj as &$entry) {
+			
+			if(isset($entry[ID]) && (in_array($entry[ID],DB::$obj["categories"][$_GET["category"]]) || $_GET["category"]==="all") ){
 				$values["id"]=$entry[ID];
 				$values["title"]=$entry[TITLE];
-				$values["href"]=blogParameterChar.PLS.'='.$entry[ID];
+				$values["href"]=blogURL.blogParameterChar.PLS.'='.$entry[ID];
 				outputTemplate($values,"postlink");
 			}
 		}
 	}
 
 	function outputCategoryBadges(){
-		global $db;
-		foreach(array_keys($db["categories"]) as $category){
+		$values['category']="all";
+		$values["categoryHref"]=blogURL.blogParameterChar.'category=all';
+		$values['categoryCount']=" [".(count(DB::$obj)-1)."]";
+		outputTemplate($values,"category");
+		foreach(array_keys(DB::$obj["categories"]) as $category){
 			$values['category']=$category;
-			$values["categoryHref"]=blogParameterChar.'category='.$category;
-			$values['categoryCount']=" [".count($db["categories"][$category])."]";
+			$values["categoryHref"]=blogURL.blogParameterChar.'category='.$category;
+			$values['categoryCount']=" [".count(DB::$obj["categories"][$category])."]";
 			outputTemplate($values,"category");
 		}
 	}
 
 	function outputMetaData(){
-		global $db;
 		if(isset($_GET[PLS]) || isset($_GET[PLL])){
 			$permalinkID = getSetPermaLinkID();
 			$filePath=dirname(__FILE__).DIRECTORY_SEPARATOR."content".DIRECTORY_SEPARATOR.$permalinkID.'.html';
-			foreach ($db as &$entry) {
+			foreach (DB::$obj as &$entry) {
 				if(isset($entry[ID]) && $entry[ID] == $permalinkID){
 					$content = loadBlogPostContentWithCache($entry);
 					outputMetaDataInternal($entry, $content);
@@ -95,26 +94,26 @@
 		}
 	}
 
-	function outputBlogPostsInternal($db){
+	function outputBlogPostsInternal(){
 		$offset = 0;
 		$page = 1;
 		if(isset($_GET["page"])){
 			$page = intval($_GET["page"]);
 			$offset = ($page-1)*blogPostsPerPage;
 		}
-		$hasMorePages=$page>=ceil((count($db)-1)/blogPostsPerPage);
+		$hasMorePages=$page>=ceil((count(DB::$obj)-1)/blogPostsPerPage);
 		$values['linkHome']=blogURL;
-		$values['pageBackHref']=blogParameterChar.'page='.($page-1);
-		$values['pageForwardHref']=blogParameterChar.'page='.($page+1);
+		$values['pageBackHref']=blogURL.blogParameterChar.'page='.($page-1);
+		$values['pageForwardHref']=blogURL.blogParameterChar.'page='.($page+1);
 		$values['hasNewerPosts']=($page<=1)?"display:none":"";
 		$values['hasOlderPosts']=$hasMorePages?"display:none":"";
-		$values['byCategoryHref']=blogParameterChar.'category=list';
+		$values['byCategoryHref']=blogURL.blogParameterChar.'category=list';
 		$values['showCategoryHref']="";
 		outputTemplate($values,"header");
 
 		$index = 0;
 		$amountAdded = 0;
-		foreach ($db as &$entry) {
+		foreach (DB::$obj as &$entry) {
 			if(isset($entry[ID])){
 				$index++;
 				if($index>$offset && $amountAdded<blogPostsPerPage){
@@ -127,9 +126,9 @@
 		outputTemplate($values,"footer");
 	}
 
-	function outputSpecificBlogPost($db,$id){
-		outputHeaderNoNavigation(true);
-		foreach ($db as &$entry) {
+	function outputSpecificBlogPost($id){
+		outputHeaderNoNavigation();
+		foreach (DB::$obj as &$entry) {
 			if(isset($entry[ID]) && $entry[ID] == $id){
 				$content = loadBlogPostContentWithCache($entry);
 				outputBlogPost($entry,$content,true);
@@ -137,14 +136,14 @@
 		}
 	}
 
-	function outputHeaderNoNavigation($showCategoryHref){
+	function outputHeaderNoNavigation(){
 		$values['linkHome']=blogURL;
 		$values['pageBackHref']="#";
 		$values['pageForwardHref']="#";
 		$values['hasNewerPosts']="display:none";
 		$values['hasOlderPosts']="display:none";
-		$values['byCategoryHref']=blogParameterChar.'category=list';
-		$values['showCategoryHref']=$showCategoryHref?"":"display:none;";
+		$values['byCategoryHref']=blogURL.blogParameterChar.'category=list';
+		$values['showCategoryHref']="display:none;";
 		outputTemplate($values,"header");
 	}
 
@@ -165,7 +164,7 @@
 			$categories="";
 			foreach($blogPost["categories"] as $category) {
 				$values['category']=$category;
-				$values["categoryHref"]=blogParameterChar.'category='.$category;
+				$values["categoryHref"]=blogURL.blogParameterChar.'category='.$category;
 				$values["categoryCount"]="";
 				$categories.=(injectTemplate($values,file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR."templates".DIRECTORY_SEPARATOR."category.html")));
 			}	
@@ -233,64 +232,6 @@
 
 	function getSetPermaLinkID(){
 		return intval(isset($_GET[PLS]) ? $_GET[PLS] : $_GET[PLL]);
-	}
-
-	// **********
-	// *** DB ***
-	// **********
-
-	function loadDB(){
-		$db = @file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR.blogDBName);
-		if($db === FALSE) {
-	      die("Could not open DB from ".$dbJsonPath);
-		}
-		$dbObj = json_decode($db,true);
-		if($dbObj==NULL){
-			switch (json_last_error()) {
-				case JSON_ERROR_DEPTH:
-					die('Could not parse DB - Maximum stack depth exceeded');
-				case JSON_ERROR_STATE_MISMATCH:
-					die('Could not parse DB - Underflow or the modes mismatch');
-				case JSON_ERROR_CTRL_CHAR:
-					die('Could not parse DB - Unexpected control character found');
-				case JSON_ERROR_SYNTAX:
-					die('Could not parse DB - Syntax error, malformed JSON');
-				case JSON_ERROR_UTF8:
-					die('Could not parse DB - Malformed UTF-8 characters, possibly incorrectly encoded');
-				default:
-					die('Could not parse DB - Unknown error');
-			}
-		}
-		return validateAndBuild($dbObj);
-	}
-
-	function validateAndBuild($db){
-		// validate
-		$ids = array();
-		foreach ($db as &$entry) {
-			if(!(isset($entry[TITLE]) && isset($entry[ID]))){
-				die("DB contains entry without 'title' or 'id'");
-			}
-			if(in_array($entry[ID],$ids)){
-				die("DB contains duplicate id (".$entry[ID].")");
-			}
-			array_push($ids, $entry[ID]);
-		}
-		// sort
-		usort($db, "sortByOrder");
-		// build
-		foreach ($db as &$entry) {
-			if(isset($entry["categories"])){
-				foreach ($entry["categories"] as &$category) {
-					if(!isset($db["categories"][$category])){
-						$db["categories"][$category]=array();
-					}
-					array_push($db["categories"][$category],$entry[ID]);
-				}
-			}
-		}
-		uasort($db["categories"], "sortByCount");
-		return $db;
 	}
 
 	function sortByOrder($a, $b) {
