@@ -5,7 +5,7 @@ A micro blog that is easy to setup, integrate and customize.
 
 A blog post:
 
-![screenshot blog post](https://i.imgur.com/HcZxWqx.png)
+![screenshot blog post](https://i.imgur.com/2Zd67zR.png)
 
 Filtering by category:
 
