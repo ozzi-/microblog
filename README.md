@@ -4,15 +4,13 @@ A micro blog that is easy to setup, integrate and customize.
 **Requires no database, only a webserver & PHP.**
 
 A blog post:
-
 ![screenshot blog post](https://i.imgur.com/2Zd67zR.png)
+_________________
 
 Filtering by category:
-
 ![screenshot blog category list](https://i.imgur.com/wpaxhjr.png)
-
+_________________
 All categories:
-
 ![screenshot blog all categories](https://i.imgur.com/xGRJ8b6.png)
 
 
