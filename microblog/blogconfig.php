@@ -1,7 +1,4 @@
 <?php
-	// Posts displayed per page
-	define ( "blogPostsPerPage", 3 );
-
 	// Link to the blog page itself
 	define ( "blogURL", "index.php");
 
@@ -22,4 +19,6 @@
 	define("ID","id");
 	// name of the db file
 	define ("blogDBName", "db.json");
+	// Posts displayed per page
+	define ( "blogPostsPerPage", 1 );
 ?>
