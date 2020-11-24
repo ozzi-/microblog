@@ -9,11 +9,13 @@
 } 
 
 .linkNoDecoration{
-	text-decoration: none
+	text-decoration: none !imortant;
+	color: black;
 }
 
 .blogMain {
 	font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+	margin-top: -10px;
 }
 
 .blogFooterSpacer {
@@ -66,8 +68,3 @@
 	color:black;
 }
 
-.img-responsive{
-	display: block;
-	max-width: 100%;
-	height: auto;
-}
