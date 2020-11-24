@@ -22,11 +22,13 @@ https://zgheb.com/i?v=blog
 
 ## The 30 Second Installation
 The following video shows how simple the "installation" is: https://vimeo.com/483067404
+
 Basically clone the git repo into your htdocs folder, assuming you have PHP and Apache running, you are already done.
 
 ## Adding content
 Blog posts are stored as html files in the folder "content".
-A video shows how its done: https://vimeo.com/483067702
+
+The following video shows how content is added: https://vimeo.com/483067702
 
 When adding a new blog post, add the required description into db.json as such:
 ```json
@@ -75,6 +77,7 @@ Let us assume you wish to change the blog header, the according file is called "
 </div>
 ```
 Edit this HTML as you wish.
+
 A video on how to do customization can be found here: https://vimeo.com/483067522
 
 Furthermore, many CSS classes for all elements are defined in blog.css.
