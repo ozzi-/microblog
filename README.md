@@ -1,13 +1,16 @@
 # µblog
-Easy to setup, integrate into existing pages and customize microblog.
+A micro blog that is easy to setup, integrate and customize.
 
 **Requires no database, only a webserver & PHP.**
 
-The overview of all blog posts:
-![screenshot overview](https://i.imgur.com/wX2SDOu.png)
-
 A blog post:
-![screenshot blog psot](https://i.imgur.com/G0jtHh2.png)
+![screenshot blog post](https://i.imgur.com/HcZxWqx.png)
+
+Filtering by category:
+![screenshot blog category list](https://i.imgur.com/wpaxhjr.png)
+
+All categories:
+![screenshot blog all categories](https://i.imgur.com/xGRJ8b6.png)
 
 
 ## Live demo
@@ -15,57 +18,76 @@ Everybody likes live demos!
 https://zgheb.com/i?v=blog
 
 ## The 30 Second Installation
-Video Demo of Installation - https://vimeo.com/352504569
-ASCII Demo of Installation - https://asciinema.org/a/yNyRUz6pDMRGsOBh2SSCwaDne
+Video Demo of Installation - https://vimeo.com/352504569 - TODO
 
 ## Adding content
-Video Demo on how to add content - https://vimeo.com/352504569
-
-Blog posts are stored as html files - you can use whatever mark-up you like.
-
-The first line of the file is interpreted as the post title for the blog itself.
-After that a JSON array is followed defining meta data for open graph protocol (http://ogp.me/), this is used for link previews on social media.
-Example:
-```
-Blog Title
+Blog posts are stored as html files in the folder "content".
+When adding a new blog post, add the required description into db.json as such:
+```json
 {
-  "og:title": "Blog Title for Social Media",
-  "og:description": "Some elaborate description", 
-  "og:image": "https://github.com/fluidicon.png"
+	"title": "23.11.2020 - Hello World",
+	"id": 1,
 }
-# Start Content #
-The actual blog content that might use <b> html tags </b>.
 ```
+The following example shows all additional information which can be passed to µblog:
+```json
+{
+	"title": "23.11.2020 - Hello World",
+	"id": 1,
+	"categories": ["microblog","hello world"],
+	"og:title": "Hello World",
+	"og:description": "This is the first post",
+	"og:image": "https://zgheb.com/templates/img/og-71.png",
+	"og:type": "article"
+}
+```
+
 If not defined, og:title will default to the blog title in the first line.
 
 If not defined, og:description will default to the blog content with its HTML tags stripped.
 
-If not defined, og:image will either be the default defined in blogconfig.php or not omitted.
+If not defined, og:image will either be the default defined in blogconfig.php or omitted.
 
 If not defined, og:type will be "article".
 
-
-The order of the posts is managed by the file names, that's why all files should be named like the following:
-```
-{incrementing number}.html
-```
-
 ## Changing the design
-Video Demo on how to do customization - https://vimeo.com/352504544
 
-In the templates folder you can tweak µblog layout and design with ease.
+µblog allows fully customizable templates, which can be found in the "templates" folder.
 
 Terms in dobule curly brackets will be replaced by µblog automagically.
 
-Example of header.html:
-
+Let us assume you wish to change the blog header, the according file is called "header.html":
 ```
 <div class='blogTitle'>
 	<a href="{{linkHome}}" class="linkNoDecoration">A new &#181;blog instance</a>
-</div><br>
+</div>
+
+<div class="d-flex justify-content-between bd-highlight mb-3">
+	<a style="{{hasNewerPosts}}" href="{{pageBackHref}}">&#8592; New posts</a>
+	<a style="{{showCategoryHref}}" href="{{byCategoryHref}}">By Category</a>
+	<a style="{{hasOlderPosts}}" href="{{pageForwardHref}}">Older posts &#8594;</a>
+</div>
 ```
+Edit this HTML as you wish.
+A video on how to do customization can be found here: https://vimeo.com/352504544
 
 Furthermore, many CSS classes for all elements are defined in blog.css.
 
 ## Configuration
-The file "blogconfig.php" contains four variables, thats all it takes to configure the your blog.
+The file "blogconfig.php" contains all that is required to configure your µblog instance.
+```php
+	// Posts displayed per page
+	define ( "blogPostsPerPage", 3 );
+
+	// Link to the blog page itself
+	define ( "blogURL", "index.php");
+
+	// The character appended after 'blogContentPath'.
+	// Use either ? or &.
+	// Use ? if your path doesn't have a url parameter itself (index.php)
+	// Use & if your path already has a url paramter (index.php?view=blog)
+	define ( "blogParameterChar","?");
+
+	// Set to 'null' to have no graph image thus the target page picking its own
+	define ( "blogDefaultOpenGraphImagePath", null);
+```
