@@ -25,8 +25,9 @@
 	function outputCategoryPosts(){
 		$values["category"] = htmlspecialchars($_GET["category"], ENT_QUOTES, 'UTF-8');
 		outputTemplate($values,"categoryfilter");
-		foreach (DB::$obj as &$entry) {			
-			if(isset($entry[ID]) && ( $_GET["category"]==="all" || in_array($entry[ID],DB::$obj["categories"][$_GET["category"]])) ){
+		foreach (DB::$obj as &$entry) {
+			$categoryExists = isset(DB::$obj["categories"][$_GET["category"]]);
+			if(isset($entry[ID]) && ( $categoryExists && in_array($entry[ID],DB::$obj["categories"][$_GET["category"]]) || $_GET["category"]==="all") ){
 				$values["id"]=$entry[ID];
 				$values["title"]=$entry[TITLE];
 				$values["href"]=blogURL.blogParameterChar.PLS.'='.$entry[ID];
